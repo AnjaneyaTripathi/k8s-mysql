@@ -43,7 +43,18 @@ kubectl create secret generic mypwds --from-literal=rootUser=root --from-literal
 
 We now write the configuration in our ```config.yaml``` file with the following details.
 
-![original_config](images/original_config.png)
+```yaml
+apiVersion: mysql.oracle.com/v2alpha1
+kind: InnoDBCluster
+metadata:
+  name: sql-cluster
+  namespace: sql-cluster
+spec:
+  secretName: mypwds
+  instances: 3
+  router:
+    instances: 1
+ ```
 
 ```
 kubectl apply -f config.yaml --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
@@ -128,24 +139,39 @@ Know let us see how our database fares.
 
 Woah! Our data is still available! Pretty cool isn't it? 🥳
 
+We can see the MySQL server lose connection, identify that the connection is lost and then reconnect to another instance and show us our data as if nothing happened.
+
 We can also watch how a new pod is created after the deletion of the previous one.
 
 ![deleting_pod_watch](images/deleting_pod_watch.png)
 
 ### Scalability
 
-In order to see how the cluster scales, we can modify the ```config.yaml``` and see how the changes are made.
+In order to see how the cluster scales, we can modify the ```config.yaml``` and see how the changes are made. Let us change the number of instances from 3 to 4.
+
+```yaml
+apiVersion: mysql.oracle.com/v2alpha1
+kind: InnoDBCluster
+metadata:
+  name: sql-cluster
+  namespace: sql-cluster
+spec:
+  secretName: mypwds
+  instances: 4
+  router:
+    instances: 1
+ ```
 
 ```
 kubectl apply -f config.yaml --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
 ```
-
-![updated_config](images/updated_config.png)
 
 ```
 kubectl get innodbcluster --watch  --namespace sql-cluster kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
 ```
 
 ![updating_config_watch](images/updating_config_watch.png)
+
+Kubernetes realises that the actual state is different from the desired state and immediately starts working on achieving the desired state.
 
 With that, we have successfully created a scalable SQL cluster.
