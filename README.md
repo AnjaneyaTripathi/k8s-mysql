@@ -47,7 +47,7 @@ We now write the configuration in our ```config.yaml``` file with the following 
 kubectl apply -f config.yaml --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
 ```
 
-![applying_config](images/applying_config)
+![applying_config](images/applying_config.png)
 
 We can see our clusters and their status by running the below command in our terminal.
 
@@ -55,15 +55,12 @@ We can see our clusters and their status by running the below command in our ter
 kubectl get innodbcluster --watch  --namespace sql-cluster --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
 ```
 
-![watching_clusters](images/watching_clusters)
+![watching_clusters](images/watching_clusters.png)
 
 We can get the service details by running the following commands.
 
 ```
 kubectl get service sql-cluster  --namespace sql-cluster --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
-```
-
-```
 kubectl describe service sql-cluster  --namespace sql-cluster --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
 ```
 
@@ -91,7 +88,7 @@ kubectl apply -f config.yaml --kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yam
 kubectl get innodbcluster --watch  --namespace sql-cluster kubeconfig ~/.kube/sql-k8s-cluster-kubeconfig.yaml
 ```
 
-![updated_config_watch](images/updated_config_watch.png)
+![updating_config_watch](images/updating_config_watch.png)
 
 Another way to test our cluster is by deleting a pod in our cluster and seeing how it fares.
 
