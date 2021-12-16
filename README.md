@@ -78,11 +78,61 @@ kubectl port-forward service/sql-cluster mysql  --namespace sql-cluster --kubeco
 
 ![port_forwarding](images/port_forwarding.png)
 
-We can now see the SQL cluster is available on port 6446.
+We can now see the SQL cluster is available on port 6446. By running the below command, we can open the mysql shell.
 
-![sql_connected](images/sql_connected.png)
+```
+mysql -h127.0.0.1 -P6446 -uroot -p
+```
+
+You'll be asked to enter a password, which will be the password you set earlier.
+
+![connecting_to_db](images/connecting_to_db.png)
 
 ## Testing the Cluster Capabilities and Playing Around
+
+Let us add some data before we test the resilience and scalability of our cluster.
+
+```sql
+CREATE TABLE students (id INT(3) PRIMARY KEY, name VARCHAR(20) NOT NULL, dept VARCHAR(5) NOT NULL);
+
+INSERT INTO user (1, "Anjaneya", "CSE");
+
+SELECT * FROM students;
+```
+
+![creating_table](images/creating_table.png)
+
+![Inserting_values](images/Inserting_values.png)
+
+Now, let us test the resilience and scalablility of our cluster!
+
+### Resilience
+
+Let us delete a pod (the one which stores the above table) and see if the data is retained or not. The pod which stores the data is identified by running the following command. 
+
+```sql
+SHOW VARIABLES WHERE Variable_name = 'hostname';
+```
+
+We get the response as ```sql-cluster-3```. In order to delete this particular pod, we execute the below command in a separate terminal window. 
+
+```
+kubectl delete -n sql-cluster pod sql-cluster-3
+```
+
+![deleting_pod](images/deleting_pod.png)
+
+Know let us see how our database fares.
+
+![resilience](images/resilience.png)
+
+Woah! Our data is still available! Pretty cool isn't it? 🥳
+
+We can also watch how a new pod is created after the deletion of the previous one.
+
+![deleting_pod_watch](images/deleting_pod_watch.png)
+
+### Scalability
 
 In order to see how the cluster scales, we can modify the ```config.yaml``` and see how the changes are made.
 
@@ -97,15 +147,5 @@ kubectl get innodbcluster --watch  --namespace sql-cluster kubeconfig ~/.kube/sq
 ```
 
 ![updating_config_watch](images/updating_config_watch.png)
-
-Another way to test our cluster is by deleting a pod in our cluster and seeing how it fares.
-
-```
-kubectl delete -n sql-cluster pod sql-cluster-0
-```
-
-![deleting_pod](images/deleting_pod.png)
-
-![deleting_pod_watch](images/deleting_pod_watch.png)
 
 With that, we have successfully created a scalable SQL cluster.
