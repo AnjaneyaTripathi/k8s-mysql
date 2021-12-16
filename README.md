@@ -59,6 +59,8 @@ kubectl get innodbcluster --watch  --namespace sql-cluster --kubeconfig ~/.kube/
 
 ![watching_clusters](images/watching_clusters.png)
 
+![console](images/console.png)
+
 We can get the service details by running the following commands.
 
 ```
